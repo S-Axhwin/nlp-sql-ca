@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NL2SQL — Natural Language to SQL</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0a0a0a;
+      color: #e5e7eb;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+
+    header h1 span {
+      color: #4f46e5;
+    }
+
+    header p {
+      color: #9ca3af;
+      margin-top: 0.5rem;
+      font-size: 1rem;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #1a1a2e;
+      border: 1px solid #4f46e5;
+      color: #818cf8;
+      font-size: 0.72rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      margin-top: 0.75rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .input-section {
+      background: #111111;
+      border: 1px solid #1f1f1f;
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      background: #1a1a1a;
+      border: 1px solid #2d2d2d;
+      color: #fff;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus {
+      border-color: #4f46e5;
+    }
+
+    input[type="text"]::placeholder {
+      color: #555;
+    }
+
+    button.generate-btn {
+      background: #4f46e5;
+      color: #fff;
+      border: none;
+      padding: 0.75rem 1.4rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      white-space: nowrap;
+    }
+
+    button.generate-btn:hover {
+      background: #4338ca;
+    }
+
+    button.generate-btn:active {
+      transform: scale(0.97);
+    }
+
+    button.generate-btn:disabled {
+      background: #312e81;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .chip {
+      background: #1a1a1a;
+      border: 1px solid #2d2d2d;
+      color: #9ca3af;
+      padding: 0.35rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .chip:hover {
+      border-color: #4f46e5;
+      color: #818cf8;
+      background: #1a1a2e;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 2rem;
+      color: #6b7280;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 28px;
+      height: 28px;
+      border: 3px solid #1f2937;
+      border-top-color: #4f46e5;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 0.75rem;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 640px) {
+      .results-grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: #111111;
+      border: 1px solid #1f1f1f;
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+
+    .card h3 {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.75rem;
+    }
+
+    .schema-card .table-name {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #818cf8;
+    }
+
+    .schema-card .confidence {
+      font-size: 0.85rem;
+      color: #6b7280;
+      margin-top: 0.25rem;
+    }
+
+    .schema-card .score-bars {
+      margin-top: 0.75rem;
+    }
+
+    .score-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .score-bar-label {
+      font-size: 0.78rem;
+      color: #9ca3af;
+      width: 70px;
+      text-align: right;
+    }
+
+    .score-bar-track {
+      flex: 1;
+      background: #1a1a1a;
+      border-radius: 4px;
+      height: 6px;
+      overflow: hidden;
+    }
+
+    .score-bar-fill {
+      height: 100%;
+      background: #4f46e5;
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+
+    .score-bar-pct {
+      font-size: 0.75rem;
+      color: #6b7280;
+      width: 38px;
+    }
+
+    .sql-card {
+      grid-column: 1 / -1;
+    }
+
+    .sql-block {
+      background: #0d0d0d;
+      border: 1px solid #1f1f1f;
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+      font-size: 0.92rem;
+      color: #a5b4fc;
+      word-break: break-all;
+      white-space: pre-wrap;
+      line-height: 1.6;
+    }
+
+    .explanation-card {
+      background: #111111;
+      border: 1px solid #1f1f1f;
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .explanation-card h3 {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.75rem;
+    }
+
+    .explanation-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .explanation-item {
+      background: #1a1a1a;
+      border: 1px solid #2d2d2d;
+      border-radius: 6px;
+      padding: 0.35rem 0.7rem;
+      font-size: 0.82rem;
+    }
+
+    .explanation-item .key {
+      color: #6b7280;
+    }
+
+    .explanation-item .val {
+      color: #a5b4fc;
+      font-weight: 600;
+      margin-left: 0.3rem;
+    }
+
+    .results-full-card {
+      background: #111111;
+      border: 1px solid #1f1f1f;
+      border-radius: 12px;
+      padding: 1.25rem;
+      overflow-x: auto;
+    }
+
+    .results-full-card h3 {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.75rem;
+    }
+
+    .row-count {
+      font-size: 0.8rem;
+      color: #4b5563;
+      margin-bottom: 0.75rem;
+    }
+
+    table.results-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    table.results-table th {
+      text-align: left;
+      padding: 0.5rem 0.75rem;
+      background: #181818;
+      color: #6b7280;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid #222;
+    }
+
+    table.results-table td {
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid #181818;
+      color: #d1d5db;
+    }
+
+    table.results-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    table.results-table tr:hover td {
+      background: #141414;
+    }
+
+    .error-box {
+      background: #1a0a0a;
+      border: 1px solid #450a0a;
+      border-radius: 8px;
+      padding: 1rem;
+      color: #f87171;
+      font-size: 0.88rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #374151;
+    }
+
+    .empty-state .icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .results-section { display: none; }
+
+    #status-bar {
+      text-align: center;
+      padding: 0.5rem;
+      font-size: 0.82rem;
+      color: #4b5563;
+      min-height: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>NL<span>2</span>SQL</h1>
+    <p>Natural Language to SQL — Transformer-Based Semantic Query Generation</p>
+    <div class="badge">✦ all-MiniLM-L6-v2 · Cosine Similarity · FastAPI</div>
+  </header>
+
+  <div class="input-section">
+    <div class="input-row">
+      <input type="text" id="query-input" placeholder="Ask anything… e.g. show top 5 students by cgpa" autocomplete="off" />
+      <button class="generate-btn" id="generate-btn" onclick="runQuery()">Generate SQL</button>
+    </div>
+    <div class="chips">
+      <span class="chip" onclick="fillQuery(this)">show top 5 students by cgpa</span>
+      <span class="chip" onclick="fillQuery(this)">students with attendance below 75</span>
+      <span class="chip" onclick="fillQuery(this)">show CSE students</span>
+      <span class="chip" onclick="fillQuery(this)">count all students</span>
+      <span class="chip" onclick="fillQuery(this)">average cgpa of students</span>
+    </div>
+  </div>
+
+  <div id="status-bar"></div>
+
+  <div class="loading" id="loading">
+    <div class="loading-spinner"></div>
+    <p>Processing query with transformer model…</p>
+  </div>
+
+  <div class="results-section" id="results-section">
+    <div class="results-grid">
+      <div class="card schema-card" id="schema-card">
+        <h3>🔍 Detected Schema</h3>
+        <div class="table-name" id="schema-table">—</div>
+        <div class="confidence" id="schema-conf"></div>
+        <div class="score-bars" id="score-bars"></div>
+      </div>
+
+      <div class="card" id="intent-card">
+        <h3>🧠 Intent</h3>
+        <div style="font-size:1.5rem; font-weight:700; color:#f0abfc;" id="intent-display">—</div>
+        <div style="font-size:0.82rem; color:#6b7280; margin-top:0.4rem;" id="intent-desc"></div>
+      </div>
+
+      <div class="card sql-card">
+        <h3>⚙️ Generated SQL</h3>
+        <div class="sql-block" id="sql-display">—</div>
+      </div>
+    </div>
+
+    <div class="explanation-card">
+      <h3>📋 Explanation</h3>
+      <div class="explanation-items" id="explanation-items"></div>
+    </div>
+
+    <div class="results-full-card">
+      <h3>📊 Query Results</h3>
+      <div id="results-body"></div>
+    </div>
+  </div>
+
+  <div class="empty-state" id="empty-state">
+    <div class="icon">🔍</div>
+    <p>Enter a natural language query above to generate SQL</p>
+  </div>
+</div>
+
+<script>
+  const INTENT_DESC = {
+    COUNT: "Counting total records",
+    AVERAGE: "Computing average of a numeric column",
+    TOP_N: "Fetching top N records ordered by a metric",
+    BOTTOM_N: "Fetching bottom N records ordered by a metric",
+    FILTER_LT: "Filtering rows where a value is less than a threshold",
+    FILTER_GT: "Filtering rows where a value is greater than a threshold",
+    SELECT: "Selecting records with optional filters",
+    SELECT_ALL: "Selecting all records",
+    SELECT_FILTER: "Filtering by department or category"
+  };
+
+  function fillQuery(el) {
+    document.getElementById('query-input').value = el.textContent;
+    document.getElementById('query-input').focus();
+  }
+
+  document.getElementById('query-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') runQuery();
+  });
+
+  async function runQuery() {
+    const query = document.getElementById('query-input').value.trim();
+    if (!query) {
+      setStatus('⚠ Please enter a query first.');
+      return;
+    }
+
+    setLoading(true);
+    setStatus('');
+    document.getElementById('results-section').style.display = 'none';
+    document.getElementById('empty-state').style.display = 'none';
+
+    try {
+      const res = await fetch('/query', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query })
+      });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      renderResults(data);
+      document.getElementById('results-section').style.display = 'block';
+      setStatus(`✓ Query processed in ~${Date.now() % 1000}ms`);
+    } catch (err) {
+      setStatus('✗ Error: ' + err.message);
+      document.getElementById('empty-state').style.display = 'block';
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function renderResults(data) {
+    // Schema card
+    const sm = data.schema_match;
+    document.getElementById('schema-table').textContent = sm.matched_table.toUpperCase();
+    document.getElementById('schema-conf').textContent = `Confidence: ${sm.table_confidence}%`;
+
+    const scoreBars = document.getElementById('score-bars');
+    scoreBars.innerHTML = '';
+    for (const [tbl, score] of Object.entries(sm.all_table_scores)) {
+      scoreBars.innerHTML += `
+        <div class="score-bar-row">
+          <div class="score-bar-label">${tbl}</div>
+          <div class="score-bar-track"><div class="score-bar-fill" style="width:${score}%"></div></div>
+          <div class="score-bar-pct">${score}%</div>
+        </div>`;
+    }
+
+    // Intent
+    const intent = data.preprocessed.intent;
+    document.getElementById('intent-display').textContent = intent;
+    document.getElementById('intent-desc').textContent = INTENT_DESC[intent] || '';
+
+    // SQL
+    document.getElementById('sql-display').textContent = data.generated_sql;
+
+    // Explanation
+    const expItems = document.getElementById('explanation-items');
+    expItems.innerHTML = '';
+    for (const [k, v] of Object.entries(data.explanation)) {
+      expItems.innerHTML += `<div class="explanation-item"><span class="key">${k}:</span><span class="val">${v}</span></div>`;
+    }
+    // Also show keywords
+    if (data.preprocessed.keywords && data.preprocessed.keywords.length) {
+      expItems.innerHTML += `<div class="explanation-item"><span class="key">keywords:</span><span class="val">${data.preprocessed.keywords.join(', ')}</span></div>`;
+    }
+
+    // Results table
+    const exec = data.execution;
+    const body = document.getElementById('results-body');
+    if (!exec.success) {
+      body.innerHTML = `<div class="error-box">❌ ${exec.error}</div>`;
+      return;
+    }
+    if (!exec.rows || exec.rows.length === 0) {
+      body.innerHTML = `<div class="row-count">No rows returned.</div>`;
+      return;
+    }
+    let html = `<div class="row-count">${exec.row_count} row${exec.row_count !== 1 ? 's' : ''} returned</div>`;
+    html += `<table class="results-table"><thead><tr>`;
+    for (const col of exec.columns) html += `<th>${col}</th>`;
+    html += `</tr></thead><tbody>`;
+    for (const row of exec.rows) {
+      html += `<tr>`;
+      for (const cell of row) {
+        const val = cell === null ? '<span style="color:#374151">null</span>' : cell;
+        html += `<td>${val}</td>`;
+      }
+      html += `</tr>`;
+    }
+    html += `</tbody></table>`;
+    body.innerHTML = html;
+  }
+
+  function setLoading(show) {
+    document.getElementById('loading').style.display = show ? 'block' : 'none';
+    document.getElementById('generate-btn').disabled = show;
+    document.getElementById('generate-btn').textContent = show ? 'Processing…' : 'Generate SQL';
+  }
+
+  function setStatus(msg) {
+    document.getElementById('status-bar').textContent = msg;
+  }
+</script>
+</body>
+</html>
