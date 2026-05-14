@@ -19,6 +19,8 @@ app = FastAPI(title="NL2SQL — Transformer-Based Query Generation")
 
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
+app.mount("/assets", StaticFiles(directory="frontend/dist/assets"), name="assets")
+
 # Init components
 init_db()
 preprocessor = NLPreprocessor()
@@ -31,7 +33,7 @@ class QueryRequest(BaseModel):
 
 @app.get("/")
 def index():
-    return FileResponse("frontend/index.html")
+    return FileResponse("frontend/dist/index.html")
 
 @app.post("/query")
 def process_query(req: QueryRequest):
