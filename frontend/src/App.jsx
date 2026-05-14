@@ -1,4 +1,7 @@
 import { useState, useEffect } from "react";
+import HistoryPage from "./pages/HistoryPage";
+import SchemaPage from "./pages/SchemaPage";
+import SettingsPage from "./pages/SettingsPage";
 
 const SUGGESTIONS = [
   "show top 5 students by cgpa",
@@ -78,6 +81,9 @@ export default function NL2SQL() {
   const [copied, setCopied] = useState(false);
   const [activeNavTab, setActiveNavTab] = useState("Query");
   const [schemaInfo, setSchemaInfo] = useState(null);
+  const [history, setHistory] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("nl2sql_history") || "[]"); } catch { return []; }
+  });
 
   // Load schema on mount
   useEffect(() => {
@@ -101,6 +107,20 @@ export default function NL2SQL() {
       if (!res.ok) throw new Error(`Server error: ${res.status}`);
       const data = await res.json();
       setResult(data);
+      // Save to history
+      const entry = {
+        query: q,
+        sql: data.generated_sql || "",
+        intent: data.preprocessed?.intent || "—",
+        success: data.execution?.success ?? false,
+        row_count: data.execution?.row_count ?? 0,
+        timestamp: new Date().toLocaleTimeString(),
+      };
+      setHistory((prev) => {
+        const updated = [...prev, entry].slice(-50);
+        localStorage.setItem("nl2sql_history", JSON.stringify(updated));
+        return updated;
+      });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -111,6 +131,17 @@ export default function NL2SQL() {
   function handleSuggestion(s) {
     setQuery(s);
     handleGenerate(s);
+  }
+
+  function handleRerun(q) {
+    setQuery(q);
+    setActiveNavTab("Query");
+    handleGenerate(q);
+  }
+
+  function clearHistory() {
+    setHistory([]);
+    localStorage.removeItem("nl2sql_history");
   }
 
   function handleCopy() {
@@ -208,6 +239,17 @@ export default function NL2SQL() {
 
         {/* Content */}
         <div className="flex-1 flex gap-3 p-4 overflow-hidden">
+
+          {activeNavTab === "History" && (
+            <HistoryPage history={history} onRerun={handleRerun} onClear={clearHistory} />
+          )}
+          {activeNavTab === "Schema" && (
+            <SchemaPage schemaInfo={schemaInfo} />
+          )}
+          {activeNavTab === "Settings" && (
+            <SettingsPage />
+          )}
+          {activeNavTab === "Query" && (<>
 
           {/* Query Panel */}
           <div className="flex-1 flex flex-col gap-3 min-w-0 overflow-y-auto">
@@ -420,7 +462,9 @@ export default function NL2SQL() {
             </div>
 
           </div>
-        </div>
+        </>)}
+
+        </div>{/* end content */}
 
         {/* Status Bar */}
         <div className="flex items-center justify-between px-5 py-1.5 bg-white border-t border-gray-200 text-[10px] text-gray-400 tracking-wide">
