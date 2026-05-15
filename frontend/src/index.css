@@ -1,14 +1,13 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg: #fff5df;
+  --bg: #F6F4F2;
   --accent: #d53e1d;
-  --accent-hover: #b8341a;
+  --accent-subtle: rgba(201, 42, 14, 0.06);
   --card: #ffffff;
   --border: #e8dfc8;
   --text: #1a1410;
   --muted: #8a7a68;
-  --grid-color: rgba(213, 62, 29, 0.06);
 }
 
 html, body, #root {
@@ -16,11 +15,51 @@ html, body, #root {
   font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 }
 
+/* ── Base + dual grid ─────────────────────────────────────── */
 body {
   background-color: var(--bg);
   background-image:
-    linear-gradient(var(--grid-color) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
-  background-size: 28px 28px;
+    /* secondary grid — 96px, softer */
+    linear-gradient(rgba(201,42,14,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,42,14,0.03) 1px, transparent 1px),
+    /* primary grid — 24px */
+    linear-gradient(rgba(201,42,14,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,42,14,0.06) 1px, transparent 1px);
+  background-size:
+    96px 96px,
+    96px 96px,
+    24px 24px,
+    24px 24px;
   color: var(--text);
+}
+
+/* ── Vignette overlay ─────────────────────────────────────── */
+body::after {
+  content: '';
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 60%, rgba(30,10,5,0.07) 100%);
+  z-index: 9999;
+}
+
+/* ── Card elevation ───────────────────────────────────────── */
+.card {
+  background: #ffffff;
+  border: 1px solid #e8dfc8;
+  box-shadow: 0 1px 3px rgba(30,10,5,0.04), 0 4px 12px rgba(30,10,5,0.03);
+  border-radius: 0.75rem;
+}
+
+/* ── Focus / active glow ──────────────────────────────────── */
+input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(213, 62, 29, 0.15);
+  border-radius: 4px;
+}
+
+button:focus-visible {
+  outline: 2px solid rgba(213, 62, 29, 0.4);
+  outline-offset: 2px;
+  border-radius: 6px;
 }

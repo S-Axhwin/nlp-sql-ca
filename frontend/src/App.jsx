@@ -191,7 +191,7 @@ export default function NL2SQL() {
         </div>
 
         <div className="px-4 pt-3 pb-1 text-[10px] tracking-widest font-semibold" style={{color:"#8a7a68"}}>ACTIVE WORKSPACE</div>
-        <div className="mx-3 mb-2 flex items-center gap-2 rounded-lg px-3 py-2 cursor-pointer transition-colors border" style={{background:"#fff5df", borderColor:"#e8dfc8"}}>
+        <div className="mx-3 mb-2 flex items-center gap-2 rounded-lg px-3 py-2 cursor-pointer transition-colors border" style={{background:"#F6F4F2", borderColor:"#e8dfc8"}}>
           <svg className="w-3.5 h-3.5" style={{color:"#8a7a68"}} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7M4 7c0-2 1-3 3-3h10c2 0 3 1 3 3M4 7h16" /></svg>
           <span className="text-xs font-medium flex-1 truncate" style={{color:"#1a1410"}}>academic.db</span>
           <span className="text-base leading-none" style={{color:"#8a7a68"}}>+</span>
@@ -258,7 +258,7 @@ export default function NL2SQL() {
           <div className="flex-1 flex flex-col gap-3 min-w-0 overflow-y-auto">
 
             {/* NL Input */}
-            <div className="rounded-xl border overflow-hidden" style={{background:"#ffffff", borderColor:"#e8dfc8"}}>
+            <div className="rounded-xl border overflow-hidden" style={{background:"#ffffff", borderColor:"#e8dfc8", boxShadow:"0 1px 3px rgba(30,10,5,0.05),0 4px 12px rgba(30,10,5,0.03)"}}>
               <div className="flex items-center justify-between px-4 py-2.5 border-b" style={{borderColor:"#f0e8d4"}}>
                 <div className="flex items-center gap-2 text-[10px] tracking-widest font-semibold" style={{color:"#8a7a68"}}>
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 012.828 2.828L11.828 15.828a2 2 0 01-1.414.586H9v-2a2 2 0 01.586-1.414z" /></svg>
@@ -324,7 +324,7 @@ export default function NL2SQL() {
             </div>
 
             {/* Results */}
-            <div className="rounded-xl border overflow-hidden" style={{background:"#ffffff", borderColor:"#e8dfc8"}}>
+            <div className="rounded-xl border overflow-hidden" style={{background:"#ffffff", borderColor:"#e8dfc8", boxShadow:"0 1px 3px rgba(30,10,5,0.05),0 4px 12px rgba(30,10,5,0.03)"}}>
               <div className="flex items-center justify-between px-4 py-2.5 border-b" style={{borderColor:"#f0e8d4"}}>
                 <div className="flex items-center gap-2 text-[10px] tracking-widest font-semibold" style={{color:"#8a7a68"}}>
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" strokeWidth={2} /><path d="M3 9h18M3 15h18M9 9v12" strokeWidth={2} /></svg>
@@ -388,7 +388,7 @@ export default function NL2SQL() {
           <div className="w-56 min-w-[224px] flex flex-col gap-3 overflow-y-auto">
 
             {/* Detected Schema */}
-            <div className="rounded-xl border overflow-hidden" style={{background:"#ffffff", borderColor:"#e8dfc8"}}>
+            <div className="rounded-xl border overflow-hidden" style={{background:"#ffffff", borderColor:"#e8dfc8", boxShadow:"0 1px 3px rgba(30,10,5,0.05),0 4px 12px rgba(30,10,5,0.03)"}}>
               <div className="px-4 py-2.5 border-b flex items-center gap-2 text-[10px] tracking-widest font-semibold" style={{borderColor:"#f0e8d4", color:"#8a7a68"}}>
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" strokeWidth={2} /><path d="M21 21l-2-2" strokeWidth={2} strokeLinecap="round" /></svg>
                 DETECTED SCHEMA
@@ -410,7 +410,7 @@ export default function NL2SQL() {
             </div>
 
             {/* Intent Analysis */}
-            <div className="rounded-xl border overflow-hidden" style={{background:"#ffffff", borderColor:"#e8dfc8"}}>
+            <div className="rounded-xl border overflow-hidden" style={{background:"#ffffff", borderColor:"#e8dfc8", boxShadow:"0 1px 3px rgba(30,10,5,0.05),0 4px 12px rgba(30,10,5,0.03)"}}>
               <div className="px-4 py-2.5 border-b flex items-center gap-2 text-[10px] tracking-widest font-semibold" style={{borderColor:"#f0e8d4", color:"#8a7a68"}}>
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
                 INTENT ANALYSIS
@@ -422,7 +422,7 @@ export default function NL2SQL() {
             </div>
 
             {/* Explanation */}
-            <div className="rounded-xl border overflow-hidden" style={{background:"#ffffff", borderColor:"#e8dfc8"}}>
+            <div className="rounded-xl border overflow-hidden" style={{background:"#ffffff", borderColor:"#e8dfc8", boxShadow:"0 1px 3px rgba(30,10,5,0.05),0 4px 12px rgba(30,10,5,0.03)"}}>
               <div className="px-4 py-2.5 border-b flex items-center gap-2 text-[10px] tracking-widest font-semibold" style={{borderColor:"#f0e8d4", color:"#8a7a68"}}>
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                 EXPLANATION
@@ -472,7 +472,7 @@ export default function NL2SQL() {
         </div>{/* end content */}
 
         {/* Status Bar */}
-        <div className="flex items-center justify-between px-5 py-1.5 border-t text-[10px] tracking-wide" style={{background:"#fff8eb", borderColor:"#e8dfc8", color:"#8a7a68"}}>
+        <div className="flex items-center justify-between px-5 py-1.5 border-t text-[10px] tracking-wide" style={{background:"#fdfcfb", borderColor:"#e8dfc8", color:"#8a7a68"}}>
           <span className="flex items-center gap-1.5">
             <span className={`w-1.5 h-1.5 rounded-full inline-block ${loading ? "bg-amber-400 animate-pulse" : error ? "bg-red-400" : "bg-emerald-500"}`} />
             {loading ? "Generating…" : error ? "Error" : "Engine Ready"}
