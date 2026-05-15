@@ -295,7 +295,7 @@ export default function App() {
                     label="Results"
                     right={execution.success ? `${execution.row_count} row${execution.row_count !== 1 ? "s" : ""}` : "error"}
                   />
-                  <div className="overflow-auto max-h-56">
+                  <div className="overflow-auto max-h-96">
                     {!execution.success ? (
                       <div className="px-4 py-3 text-[11px] text-red-500">{execution.error || "Query failed"}</div>
                     ) : execution.row_count === 0 ? (
