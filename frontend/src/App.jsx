@@ -31,7 +31,7 @@ function SqlToken({ sql }) {
 // Card wrapper
 function Card({ children, className = "" }) {
   return (
-    <div className={`bg-white border border-[#e5ddd0] rounded-xl shadow-sm shadow-stone-200/60 overflow-hidden ${className}`}>
+    <div className={`bg-white border border-[#e5ddd0] rounded-none shadow-sm shadow-stone-200/60 overflow-hidden ${className}`}>
       {children}
     </div>
   );
@@ -155,7 +155,7 @@ export default function App() {
         {/* DB */}
         <div className="px-3 pt-4 pb-1">
           <p className="text-[9px] tracking-[0.15em] font-semibold text-[#8a7a6a] uppercase mb-2">Database</p>
-          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border border-[#e5ddd0] text-[#1c1410] text-[11px] font-medium">
+          <div className="flex items-center gap-2 px-3 py-2 rounded-none bg-white border border-[#e5ddd0] text-[#1c1410] text-[11px] font-medium">
             <svg className="w-3 h-3 text-[#c92a0e] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3" strokeWidth="2"/><path d="M3 5v14c0 1.657 4.03 3 9 3s9-1.343 9-3V5" strokeWidth="2"/><path d="M3 12c0 1.657 4.03 3 9 3s9-1.343 9-3" strokeWidth="2"/></svg>
             academic.db
           </div>
@@ -167,7 +167,7 @@ export default function App() {
         </div>
         <div className="flex-1 overflow-y-auto px-3 space-y-0.5">
           {tableNames.map(t => (
-            <div key={t} className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-stone-100 cursor-pointer text-[#5a4a3a] text-[11px] transition-colors">
+            <div key={t} className="flex items-center gap-2 px-3 py-1.5 rounded-none hover:bg-stone-100 cursor-pointer text-[#5a4a3a] text-[11px] transition-colors">
               <svg className="w-3 h-3 text-[#8a7a6a] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" strokeWidth="2"/><path d="M3 9h18M9 9v12" strokeWidth="2"/></svg>
               {t}
             </div>
@@ -232,7 +232,7 @@ export default function App() {
                   <div className="p-4 space-y-3">
                     <div className="flex gap-3">
                       <input
-                        className="flex-1 bg-[#F6F4F2] border border-[#e5ddd0] rounded-lg px-3 py-2 text-sm text-[#1c1410] placeholder-[#8a7a6a] focus:ring-2 focus:ring-[#c92a0e]/20 focus:border-[#c92a0e] transition-all"
+                        className="flex-1 bg-[#F6F4F2] border border-[#e5ddd0] rounded-none px-3 py-2 text-sm text-[#1c1410] placeholder-[#8a7a6a] focus:ring-2 focus:ring-[#c92a0e]/20 focus:border-[#c92a0e] transition-all"
                         value={query}
                         onChange={e => setQuery(e.target.value)}
                         onKeyDown={e => e.key === "Enter" && handleGenerate()}
@@ -241,7 +241,7 @@ export default function App() {
                       <button
                         onClick={() => handleGenerate()}
                         disabled={loading}
-                        className="px-5 py-2 bg-[#c92a0e] hover:bg-[#a82208] text-white text-xs font-semibold rounded-lg transition-colors disabled:opacity-50 shrink-0"
+                        className="px-5 py-2 bg-[#c92a0e] hover:bg-[#a82208] text-white text-xs font-semibold rounded-none transition-colors disabled:opacity-50 shrink-0"
                       >
                         {loading ? "Running…" : "Run Query"}
                       </button>
@@ -249,7 +249,7 @@ export default function App() {
                     <div className="flex flex-wrap gap-2">
                       {SUGGESTIONS.map(s => (
                         <button key={s} onClick={() => { setQuery(s); handleGenerate(s); }}
-                          className="px-3 py-1 text-[11px] text-[#8a7a6a] border border-[#e5ddd0] rounded-full bg-[#F6F4F2] hover:border-[#c92a0e] hover:text-[#c92a0e] transition-colors"
+                          className="px-3 py-1 text-[11px] text-[#8a7a6a] border border-[#e5ddd0] rounded-none bg-[#F6F4F2] hover:border-[#c92a0e] hover:text-[#c92a0e] transition-colors"
                         >{s}</button>
                       ))}
                     </div>
@@ -285,48 +285,48 @@ export default function App() {
                     label="Results"
                     right={execution.success ? `${execution.row_count} row${execution.row_count !== 1 ? "s" : ""}` : "error"}
                   />
+                  <div className="overflow-auto max-h-64">
                   {!execution.success ? (
                     <div className="px-4 py-3 text-[11px] text-red-500">{execution.error || "Query failed"}</div>
                   ) : execution.row_count === 0 ? (
                     <div className="px-4 py-3 text-[11px] text-[#8a7a6a]">No results.</div>
                   ) : (
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-xs">
-                        <thead>
-                          <tr className="border-b border-[#ede6d8] bg-[#fdfcfa]">
-                            {execution.columns.map(col => (
-                              <th key={col} className="px-4 py-2.5 text-left text-[10px] tracking-[0.12em] font-semibold text-[#8a7a6a] uppercase">{col}</th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {execution.rows.map((row, i) => (
-                            <tr key={i} className="border-b border-[#f5ede0] hover:bg-[#fdfaf7] transition-colors">
-                              {row.map((cell, j) => {
-                                const col = execution.columns[j];
-                                if (col === "cgpa" && typeof cell === "number") return (
-                                  <td key={j} className="px-4 py-2.5">
-                                    <div className="flex items-center gap-2">
-                                      <span className="font-semibold text-[#1c1410]">{cell}</span>
-                                      <div className="w-12 h-1 rounded-full bg-stone-100">
-                                        <div className="h-full rounded-full bg-[#c92a0e]" style={{ width: `${(cell / 10) * 100}%` }}/>
-                                      </div>
-                                    </div>
-                                  </td>
-                                );
-                                if (col === "department" && cell) return (
-                                  <td key={j} className="px-4 py-2.5">
-                                    <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#fff0ee] text-[#c92a0e] border border-[#f5c4bc]">{cell}</span>
-                                  </td>
-                                );
-                                return <td key={j} className="px-4 py-2.5 text-[#5a4a3a]">{cell ?? "—"}</td>;
-                              })}
-                            </tr>
+                    <table className="w-full text-xs">
+                      <thead className="sticky top-0 z-10">
+                        <tr className="border-b border-[#ede6d8] bg-[#fdfcfa]">
+                          {execution.columns.map(col => (
+                            <th key={col} className="px-4 py-2.5 text-left text-[10px] tracking-[0.12em] font-semibold text-[#8a7a6a] uppercase whitespace-nowrap">{col}</th>
                           ))}
-                        </tbody>
-                      </table>
-                    </div>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {execution.rows.map((row, i) => (
+                          <tr key={i} className="border-b border-[#f5ede0] hover:bg-[#fdfaf7] transition-colors">
+                            {row.map((cell, j) => {
+                              const col = execution.columns[j];
+                              if (col === "cgpa" && typeof cell === "number") return (
+                                <td key={j} className="px-4 py-2.5 whitespace-nowrap">
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-semibold text-[#1c1410]">{cell}</span>
+                                    <div className="w-12 h-1 bg-stone-100">
+                                      <div className="h-full bg-[#c92a0e]" style={{ width: `${(cell / 10) * 100}%` }}/>
+                                    </div>
+                                  </div>
+                                </td>
+                              );
+                              if (col === "department" && cell) return (
+                                <td key={j} className="px-4 py-2.5 whitespace-nowrap">
+                                  <span className="px-2 py-0.5 text-[10px] font-semibold bg-[#fff0ee] text-[#c92a0e] border border-[#f5c4bc]">{cell}</span>
+                                </td>
+                              );
+                              return <td key={j} className="px-4 py-2.5 text-[#5a4a3a] whitespace-nowrap">{cell ?? "—"}</td>;
+                            })}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   )}
+                  </div>
                 </Card>
 
               </div>
@@ -357,7 +357,7 @@ export default function App() {
                 <Card>
                   <CardHeader icon={<svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>} label="Intent" />
                   <div className="p-4 space-y-2">
-                    <span className="inline-block px-3 py-1 rounded-md text-xs font-bold bg-[#c92a0e] text-white">{intent}</span>
+                    <span className="inline-block px-3 py-1 rounded-none text-xs font-bold bg-[#c92a0e] text-white">{intent}</span>
                     <p className="text-[11px] text-[#8a7a6a] leading-relaxed">{INTENT_DESC[intent] || "Processing query."}</p>
                   </div>
                 </Card>
@@ -375,7 +375,7 @@ export default function App() {
                     ].map(([k, v]) => (
                       <div key={k} className="flex items-center justify-between gap-2">
                         <span className="text-[11px] text-[#8a7a6a] shrink-0">{k}</span>
-                        <span className="px-2 py-0.5 rounded bg-[#F6F4F2] border border-[#e5ddd0] text-[11px] font-semibold text-[#1c1410] truncate max-w-[100px]">{v}</span>
+                        <span className="px-2 py-0.5 rounded-none bg-[#F6F4F2] border border-[#e5ddd0] text-[11px] font-semibold text-[#1c1410] truncate max-w-[100px]">{v}</span>
                       </div>
                     ))}
                     {keywords.length > 0 && (
@@ -383,7 +383,7 @@ export default function App() {
                         <p className="text-[9px] tracking-[0.15em] font-semibold text-[#8a7a6a] uppercase">Keywords</p>
                         <div className="flex flex-wrap gap-1.5">
                           {keywords.slice(0, 8).map(kw => (
-                            <span key={kw} className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#c92a0e] text-white">{kw.toUpperCase()}</span>
+                            <span key={kw} className="px-2 py-0.5 rounded-none text-[10px] font-semibold bg-[#c92a0e] text-white">{kw.toUpperCase()}</span>
                           ))}
                         </div>
                       </div>
